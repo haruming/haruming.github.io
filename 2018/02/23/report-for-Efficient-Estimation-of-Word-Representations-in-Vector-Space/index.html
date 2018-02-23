@@ -7,17 +7,17 @@
   
   <title>report for Efficient Estimation of Word Representations in Vector Space | Lonely Tech Planet</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Report1Efficient Estimation of Word Representations in Vector Spaceyangwm9@mail2.sysu.edu.cn Duration: 2018/02/21 to 2018/02/28Introduction    ● Previous NLP models like N-grams are at their limits in">
+  <meta name="description" content="Report1Efficient Estimation of Word Representations in Vector Spaceyangwm9@mail2.sysu.edu.cnDuration: 2018/02/21 to 2018/02/28Introduction Previous NLP models like N-grams are at their limits in many">
 <meta property="og:type" content="article">
 <meta property="og:title" content="report for Efficient Estimation of Word Representations in Vector Space">
 <meta property="og:url" content="http://coretech.org/2018/02/23/report-for-Efficient-Estimation-of-Word-Representations-in-Vector-Space/index.html">
 <meta property="og:site_name" content="Lonely Tech Planet">
-<meta property="og:description" content="Report1Efficient Estimation of Word Representations in Vector Spaceyangwm9@mail2.sysu.edu.cn Duration: 2018/02/21 to 2018/02/28Introduction    ● Previous NLP models like N-grams are at their limits in">
+<meta property="og:description" content="Report1Efficient Estimation of Word Representations in Vector Spaceyangwm9@mail2.sysu.edu.cnDuration: 2018/02/21 to 2018/02/28Introduction Previous NLP models like N-grams are at their limits in many">
 <meta property="og:locale" content="English">
-<meta property="og:updated_time" content="2018-02-23T15:24:09.392Z">
+<meta property="og:updated_time" content="2018-02-23T16:03:24.668Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="report for Efficient Estimation of Word Representations in Vector Space">
-<meta name="twitter:description" content="Report1Efficient Estimation of Word Representations in Vector Spaceyangwm9@mail2.sysu.edu.cn Duration: 2018/02/21 to 2018/02/28Introduction    ● Previous NLP models like N-grams are at their limits in">
+<meta name="twitter:description" content="Report1Efficient Estimation of Word Representations in Vector Spaceyangwm9@mail2.sysu.edu.cnDuration: 2018/02/21 to 2018/02/28Introduction Previous NLP models like N-grams are at their limits in many">
   
     <link rel="alternate" href="/atom.xml" title="Lonely Tech Planet" type="application/atom+xml">
   
@@ -90,18 +90,119 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Report1<br>Efficient Estimation of Word Representations in Vector Space<br>yangwm9@mail2.sysu.edu.cn</p>
-<p>Duration: 2018/02/21 to 2018/02/28<br>Introduction<br>    ● Previous NLP models like N-grams are at their limits in many tasks.<br>    ● Goals: introduce techniques used for learning high-quality word vectors from huge data sets with billions of words with following features<br>        ○ not restricted to a few hundred of millions of words<br>        ○ dimensionality of word vectors between 50-100<br>        ○ words can have multiple degree of similarity<br>        ○ word vectors can perform simple algebraic operations<br>        ○ test for measuring both syntactic and semantic regularities<br>        ○ training time and accuracy(dimensionality and amount of data)<br>    ● Previous Work: NNLM with single layer, word vectors are first learned by NNLM, then the resulting word vectors reversely train the NNLM. The technique introduced in this paper focus on the first step.</p>
-<p>Model Architectures<br>    ● Feedforward Neural Network Language Model (NNLM)<br>        ○ 4 parts: input, projection, hidden and output layers.<br>        ○ 1-of-V coding for N previous words in input layer(one-hot representation)<br>        ○ Projection layer has dimensionality of N x D with a shared projection matrix<br>        ○ hidden layer is used to compute probability distribution over all the words in the vocabulary, resulting in an output layer with dimensionality V<br>        ○ the computational complexity per each training example is Q = N <em> D + N </em> D <em> H + H </em> V where most of the complexity is caused by N <em> D </em> H<br>        ○ hierarchical softmax and Huffman binary tree for speedup<br>    ● Recurrent Neural Net Language Model (RNNLM)<br>        ○ overcome some certain limitations of NNLM<br>        ○ RNN model does not have a projection layer<br>        ○ complexity: Q = H <em> H + H </em> V where most  complexity comes from H * H<br>    ● Parallel Training of Neural Networks<br>        ○ a large-scale distributed framework DistBelief used to run multiple replicas of the same model in parallel<br>        ○ mini-batch asynchronous gradient descent with Adagrad</p>
-<p>New Log-linear Models<br>    1, continuous word vectors are learned using simple model<br>    2, N-gram NNLM is trained on top of representations of words<br>    3, speed up the process of training for word representations<br>    ● Continuous Bag-of-Words Model<br>        ○ the hidden layer is removed and the projection layer is shared for all words<br>        ○ the order of words does not influence the projection<br>        ○ use future and history words as input continuously<br>        ○ complexity: Q = N <em> D + D </em> log2(V)<br>    ● Continuous Skip-gram Model<br>        ○ reverse process of CBOW<br>        ○ maximize classification of a word based on another word in same sentence<br>        ○ predict words within a certain range before and after the current word<br>        ○ complexity: Q = C <em> (D + D </em> log2(V)) where C is the disctance of th words</p>
-<p>Results<br>    What’s the answer of the question: vector X = vector(biggest) - vector(big) + vector(small) ?<br>    The model can perform simple algebraic operations with the representation of words and it is possible to find the correct answer (smallest) using this model.<br>    ● Task Description<br>    ○ First find a list of similar word pairs manually<br>    ○ train the word pairs to be vector representations<br>    ○ connecting 2 word pairs by the formula above, it forms the question and predicts the answer, then calculate the accuracy<br>    ○ the vocabulary size to 1 million most frequent words. However, this is only for English and how about Chinese? After deleting the duplicate words in Chinese, I think the size will less than 1 million in a large scale<br>    ● Maximization of Accuracy<br>        ○ adding more dimension or adding more training data either increases accuracy and training time, but the extent is different respectively<br>        ○ In some case, increasing the dimension is better than training data while the performance is better by increasing training data in some case<br>        ○ When the dimension is over 300, the improvement of increasing the dimension is diminishing.<br>    ● Comparison of Model Architectures<br>        ○ In the same training words and dimension, Skip-gram model performs excellent both semantically and syntactically but CBOW model performs badly semantically. What’s the reason?<br>        ○ training a model using 1 epoch gives comparable or better results than iterating over the same data for 3 epochs, which shows that it is enough for us to train the data with 1 epoch.<br>        ○ training time of Skip-gram is related to the parameter C and the training time is approximately 3 times longer than CBOW.<br>        ○ the training time of both CBOW and Skip-gram is in proportion to either the amount of training words or vector dimensionality<br>    ● Large Scale Parallel Training of Models<br>        ○ In a large scale corpus, it is impossible to train the high dimensional data by NNLM because the training time and cost are too high<br>        ○ In a large scale corpus and high vector dimensionality, the CBOW model is more accurate than Skip-gram syntactically<br>    ● Microsoft Research Sentence Completion Challenge<br>        ○the author turns this task into a task that calculates the probability of a sentence(for each of the 5 words, choose the maximum probability of the sentence after calculation)</p>
-<p>Some notes and opinions about this paper<br>    ● all the NLP models including NNLM, RNNLM, CBOW, Skip-gram are trained by machine learning algorithms called stochastic gradient descent and backpropagation.<br>    ● training time and accuracy rate are related to vector dimensionality and the mount of training data.<br>    ● this paper does not include the multi-word entities also it is restricted to English. When it comes to Chinese, the dimension and training data will vary.<br>    ● the initial learning rate is 0.025 which is too small and it decreases linearly.<br>    ● the architecture of composition: Skip-gram and RNNLMs is a good way to train data.<br>    ● word vectors can be used in many NLP applications and tasks like sentiment analysis and paraphrase detection.<br>    ● window size: skip-gram is usually at 10 and CBOW at 5.<br>    ● CBOW is faster than Skip-gram when the the amount of training data is in a large scale and Skip-gram have advantage in training rare or not frequent words.<br>    ● hierarchical Huffman level softmax is better than the traditional ones.<br>    ●the speedup algorithm can be negative sample, huffman, softmax or the combination of these algorithms.<br>    ● 3 major word vectors NN training model: glove, word2vec and fasttext</p>
-<p>Questions<br>    ● why does CBOW model perform worse than Skip-gram semantically?<br>    ● what if the text and words are in Chinese?<br>    ● why should the hidden layer vectors average the sum of the vectors as hidden vector? What about log function and others?<br>    ● how to understand the weights between hidden layer and output layer?<br>    ● why is SGD is best for the training model? Can it be improved by applying the mini batch gradient descent algorithm?<br>    ● how to define the loss function which means how close is the output vector to the ground-truth vector of the label(desired vector)?</p>
+        <h1 id="Report1"><a href="#Report1" class="headerlink" title="Report1"></a>Report1</h1><h2 id="Efficient-Estimation-of-Word-Representations-in-Vector-Space"><a href="#Efficient-Estimation-of-Word-Representations-in-Vector-Space" class="headerlink" title="Efficient Estimation of Word Representations in Vector Space"></a>Efficient Estimation of Word Representations in Vector Space</h2><h3 id="yangwm9-mail2-sysu-edu-cn"><a href="#yangwm9-mail2-sysu-edu-cn" class="headerlink" title="yangwm9@mail2.sysu.edu.cn"></a>yangwm9@mail2.sysu.edu.cn</h3><h3 id="Duration-2018-02-21-to-2018-02-28"><a href="#Duration-2018-02-21-to-2018-02-28" class="headerlink" title="Duration: 2018/02/21 to 2018/02/28"></a>Duration: 2018/02/21 to 2018/02/28</h3><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><ul>
+<li>Previous NLP models like N-grams are at their limits in many tasks.</li>
+<li>Goals: introduce techniques used for learning high-quality word vectors from huge data sets with billions of words with following features<ul>
+<li>not restricted to a few hundred of millions of words</li>
+<li>dimensionality of word vectors between 50-100</li>
+<li>words can have multiple degree of similarity</li>
+<li>word vectors can perform simple algebraic operations</li>
+<li>test for measuring both syntactic and semantic regularities</li>
+<li>training time and accuracy(dimensionality and amount of data)</li>
+</ul>
+</li>
+<li>Previous Work: NNLM with single layer, word vectors are first learned by NNLM, then the resulting word vectors reversely train the NNLM. The technique introduced in this paper focus on the first step.</li>
+</ul>
+<h3 id="Model-Architectures"><a href="#Model-Architectures" class="headerlink" title="Model Architectures"></a>Model Architectures</h3><ul>
+<li>Feedforward Neural Network Language Model (NNLM)<ul>
+<li>4 parts: input, projection, hidden and output layers.</li>
+<li>1-of-V coding for N previous words in input layer(one-hot representation)</li>
+<li>Projection layer has dimensionality of N x D with a shared projection matrix</li>
+<li>hidden layer is used to compute probability distribution over all the words in the vocabulary, resulting in an output layer with dimensionality V</li>
+<li>the computational complexity per each training example is Q = N <em> D + N </em> D <em> H + H </em> V where most of the complexity is caused by N <em> D </em> H</li>
+<li>hierarchical softmax and Huffman binary tree for speedup</li>
+</ul>
+</li>
+<li>Recurrent Neural Net Language Model (RNNLM)<ul>
+<li>overcome some certain limitations of NNLM</li>
+<li>RNN model does not have a projection layer</li>
+<li>complexity: Q = H <em> H + H </em> V where most  complexity comes from H * H</li>
+</ul>
+</li>
+<li>Parallel Training of Neural Networks<ul>
+<li>a large-scale distributed framework DistBelief used to run multiple replicas of the same model in parallel</li>
+<li>mini-batch asynchronous gradient descent with Adagrad</li>
+</ul>
+</li>
+</ul>
+<h3 id="New-Log-linear-Models"><a href="#New-Log-linear-Models" class="headerlink" title="New Log-linear Models"></a>New Log-linear Models</h3><ul>
+<li>continuous word vectors are learned using simple model</li>
+<li>N-gram NNLM is trained on top of representations of words</li>
+<li>speed up the process of training for word representations</li>
+<li>Continuous Bag-of-Words Model<ul>
+<li>the hidden layer is removed and the projection layer is shared for all words</li>
+<li>the order of words does not influence the projection</li>
+<li>use future and history words as input continuously</li>
+<li>complexity: Q = N <em> D + D </em> log2(V)</li>
+</ul>
+</li>
+<li>Continuous Skip-gram Model<ul>
+<li>reverse process of CBOW</li>
+<li>maximize classification of a word based on another word in same sentence</li>
+<li>predict words within a certain range before and after the current word</li>
+<li>complexity: Q = C <em> (D + D </em> log2(V)) where C is the disctance of th words</li>
+</ul>
+</li>
+</ul>
+<h3 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h3><ul>
+<li>What’s the answer of the question: vector X = vector(biggest) - vector(big) + vector(small) ?</li>
+<li>The model can perform simple algebraic operations with the representation of words and it is possible to find the correct answer (smallest) using this model.</li>
+<li>Task Description<ul>
+<li>First find a list of similar word pairs manually</li>
+<li>train the word pairs to be vector representations</li>
+<li>connecting 2 word pairs by the formula above, it forms the question and predicts the answer, then calculate the accuracy</li>
+<li>the vocabulary size to 1 million most frequent words. However, this is only for English and how about Chinese? After deleting the duplicate words in Chinese, I think the size will less than 1 million in a large scale</li>
+</ul>
+</li>
+<li>Maximization of Accuracy<ul>
+<li>adding more dimension or adding more training data either increases accuracy and training time, but the extent is different respectively</li>
+<li>In some case, increasing the dimension is better than training data while the performance is better by increasing training data in some case</li>
+<li>When the dimension is over 300, the improvement of increasing the dimension is diminishing.</li>
+</ul>
+</li>
+<li>Comparison of Model Architectures<ul>
+<li>In the same training words and dimension, Skip-gram model performs excellent both semantically and syntactically but CBOW model performs badly semantically. What’s the reason?</li>
+<li>training a model using 1 epoch gives comparable or better results than iterating over the same data for 3 epochs, which shows that it is enough for us to train the data with 1 epoch.</li>
+<li>training time of Skip-gram is related to the parameter C and the training time is approximately 3 times longer than CBOW.</li>
+<li>the training time of both CBOW and Skip-gram is in proportion to either the amount of training words or vector dimensionality</li>
+</ul>
+</li>
+<li>Large Scale Parallel Training of Models<ul>
+<li>In a large scale corpus, it is impossible to train the high dimensional data by NNLM because the training time and cost are too high</li>
+<li>In a large scale corpus and high vector dimensionality, the CBOW model is more accurate than Skip-gram syntactically </li>
+</ul>
+</li>
+<li>Microsoft Research Sentence Completion Challenge<ul>
+<li>the author turns this task into a task that calculates the probability of a sentence(for each of the 5 words, choose the maximum probability of the sentence after calculation)</li>
+</ul>
+</li>
+</ul>
+<h3 id="Some-notes-and-opinions-about-this-paper"><a href="#Some-notes-and-opinions-about-this-paper" class="headerlink" title="Some notes and opinions about this paper"></a>Some notes and opinions about this paper</h3><ul>
+<li>all the NLP models including NNLM, RNNLM, CBOW, Skip-gram are trained by machine learning algorithms called stochastic gradient descent and backpropagation.</li>
+<li>training time and accuracy rate are related to vector dimensionality and the mount of training data.</li>
+<li>this paper does not include the multi-word entities also it is restricted to English. When it comes to Chinese, the dimension and training data will vary.</li>
+<li>the initial learning rate is 0.025 which is too small and it decreases linearly.</li>
+<li>the architecture of composition: Skip-gram and RNNLMs is a good way to train data.</li>
+<li>word vectors can be used in many NLP applications and tasks like sentiment analysis and paraphrase detection.</li>
+<li>window size: skip-gram is usually at 10 and CBOW at 5.</li>
+<li>CBOW is faster than Skip-gram when the the amount of training data is in a large scale and Skip-gram have advantage in training rare or not frequent words.</li>
+<li>hierarchical Huffman level softmax is better than the traditional ones.</li>
+<li>the speedup algorithm can be negative sample, huffman, softmax or the combination of these algorithms. </li>
+<li>3 major word vectors NN training model: glove, word2vec and fasttext</li>
+</ul>
+<h3 id="Questions"><a href="#Questions" class="headerlink" title="Questions"></a>Questions</h3><ul>
+<li>why does CBOW model perform worse than Skip-gram semantically?</li>
+<li>what if the text and words are in Chinese?</li>
+<li>why should the hidden layer vectors average the sum of the vectors as hidden vector? What about log function and others?</li>
+<li>how to understand the weights between hidden layer and output layer?</li>
+<li>why is SGD is best for the training model? Can it be improved by applying the mini batch gradient descent algorithm?</li>
+<li>how to define the loss function which means how close is the output vector to the ground-truth vector of the label(desired vector)?</li>
+</ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://coretech.org/2018/02/23/report-for-Efficient-Estimation-of-Word-Representations-in-Vector-Space/" data-id="cje03ymg70000scdjboufugn2" class="article-share-link">Teilen</a>
+      <a data-url="http://coretech.org/2018/02/23/report-for-Efficient-Estimation-of-Word-Representations-in-Vector-Space/" data-id="cje04tnce0001igdjdifchxkh" class="article-share-link">Teilen</a>
       
       
     </footer>
