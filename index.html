@@ -69,6 +69,49 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-On-Availability-for-Blockchain-Based-Systems" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/02/26/On-Availability-for-Blockchain-Based-Systems/" class="article-date">
+  <time datetime="2018-02-26T15:52:28.000Z" itemprop="datePublished">2018-02-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/02/26/On-Availability-for-Blockchain-Based-Systems/">On Availability for Blockchain-Based Systems</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Report2<br>On Availability for Blockchain-Based Systems<br>yangwm9@mail2.sysu.edu.cn</p>
+<p>Duration: 2018/02/24 to 2018/02/26<br>Introduction<br>●transactions can record data about any kind of application domain, and can deploy and execute user-defined scripts<br>●understanding the dependability properties supported by blockchains is crucial<br>●we should measure the availability of mainstream blockchains in terms of their responsiveness<br>○define the notion of transaction commit needed by applications<br>○A commit requires instead that some peers create a sequence of blocks<br>●clients cannot expect a time for their transaction to commit<br>●proof-of-work blockchains impact the dependability of systems<br>●network reordering plays a important role in causing significant delays<br>●transactions can remain uncommitted and even stuck in the transaction pool</p>
+<p>Background<br>●Every participant holds a local copy of the ledger and runs a network client that relays transactions to the entire network<br>●asymmetric cryptography: owner with private key can create and sign transactions and others can verify it by corresponding public key<br>●all participants are in consensus about which transactions have been successfully made in case of double spend problem<br>○proof-of-work<br>○proof-of-stake<br>●A miner should find a random number and compute a hash sum over this block which must be smaller than a certain target value. Only brute-force search. More over, target value will decrease which make the computation more difficult.<br>●A fork problem is two miners may occasionally find a new block at the same time and propagate it. However, every miner should work from the currently longest chain. Thus, we need the appropriate number of confirmation blocks to be waited. “51% attack” is difficult.<br>●mining pool may be dangerous because attackers can make use of it.<br>●Ethereum provides a mechanism called “gas price”</p>
+<p>Commit of Bitcoin Transactions<br>●transactions can experience delay that they must arrive in-order<br>●orphan transactions should wait for their parents arriving first<br>●locktimes can affect the transaction delay<br>●Data Collection Methodology<br>○modify bctd and change the mempool to log every incoming transaction<br>○3 categories in pool: Straight-accept, rejected, orphaned(out-of-order arrival)<br>●Inclusion Time of Bitcoin Transactions<br>○the fraction of orphans in the second experiment is higher<br>○the majority reason for reject is the transactions are already in mempool<br>○transaction fees and locktimes may be two main factors<br>○It is unlikely that lower transaction fees are a cause for dalayed commit<br>○orphans never had locktimes beyond the observation window which shows that locktimes are not likely to be a decisive factor<br>Commit of Ethereum Transactions<br>●Ethereum Transaction Handling<br>○it is impossible to know whether a transaction that is invalid in some state of the system will never be valid in a later state.<br>○uncles in Ethereum<br>●Data Collection and Basic Statistics<br>○modify the geth client in Ethereum<br>○record the time because no timestamp(for mining)<br>●From First Inclusion to Commit<br>○transactions that were in uncles need to go back to transaction pool<br>○Ethereum recommends to wait for 11 confirmations after block inclusion before a transaction is committed permanently<br>○growing faction of transactions that have to wait longer for a commit<br>●Impact of User-defined Gas Price and Limit<br>○gas price and the maximum gas offered for including a transaction<br>○the higher the gas price in a given band, the less likely long delays<br>○can not find correlation in any direction between maximum gas and delay<br>●Impact of network delays<br>○a transaction with a nonce n+1 cannot be included into the blockchain unless there is an already included transaction with nonce n.<br>○in-order and out-of-order arrival of transactions experiments<br>○commit delay for out-of-order is doubled<br>○work connectivity may have negatively impacted transaction propagation</p>
+<p>○netImpact of the Block Gas Limit in Ethereum<br>●a second form of limit —-&gt; gas limit per block. it is defined by the network of miners and applies to the sum of gas consumed by all transactions in a block<br>●prevent the DoS attacks by limiting the amount of computation per block<br>●most of the function that are currently in use are not computationally intensive<br>●many contracts would not have been deployable while the block gas limit in place</p>
+<p>Transaction Abort In Ethereum<br>●some options to achieve an effect that is similar to an explicit abort<br>○more transaction fees or retry the same Tx<br>●scenarios for abortion:<br>○1. a transaction is not included in the usual period of time<br>○2. a client changes its mind and decide to abort<br>○3. a transaction is in indefinite pending state due to insufficient funds<br>●scenario 1:<br>○most transactions were accepted by the network<br>○6/10 with either 0 or 0.2 <em> mr were accepted<br>○2/10 with 0.1 </em> mr were accepted<br>●scenario 2:<br>○set the time out value to be 3 mins<br>○a much higher percentage of transactions were not included in a block<br>○there may be many reasons for this distribution: processing time, broadcast delays or no preference is given to transaction with higher fee<br>●scenario 3:<br>○submit Tx2 first and then Tx1 so that 2 Txs can be in the pool<br>○Tx2 is in a indefintie state because it can be accpeted later<br>○the experiment is very sucessful</p>
+<p>Advantage of this paper<br>●authors of this paper extract all the factor from the reason for commit delay like gas price, gas limit, network and so on. Each experiment in this paper should consider all the factors and can not be affected by other factors when measuring a effect a factor.<br>●This paper used a large amount of numbers, graphs and plots so that it is very convincing and trusty.<br>●it is very clever to achieve an effect that is similar to an explicit abort by a way that the system or user can issue a competing transaction from the same source account or submitting another transaction that the field in it contain the same data as before<br>●Also it is really cool to create a situation that a transaction in a pool is in a indefinite state in experiment 3 by submitting the transaction with a larger nonce and then submitting the transaction with the smaller one.<br>●this paper found that network reordering can impact dramatically commit times and even counterbalance the effects of transaction fees and gas price.<br>Disadvantage of this paper<br>●The experiment on Bitcoin was conduct only in 2016 and 2017, each lasted for 25hours. In fact, we can collect more data so that the result can be clearer and more accurate<br>●A obvious limitation of their work is that  they do not know the locktimes of those orphans that were not included in the blockchain by the end of their observation period.<br>●There may still be confounding factors in their study they can not control. For example, they conducted their experiments and collected the data only for Australia, and the nodes in Australia are somewhat connected to outside Australia.<br>●They also could not determine the Internet routing constellation that the Bitcoin network is exposed to.<br>●The paper did a good job in analyzing the factor of user-defined gas price and limit but they could not find a strong correlation in any direction between maximum gas and commit delay. This can be an open question for all the researchers specializing in blockchain system.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://coretech.org/2018/02/26/On-Availability-for-Blockchain-Based-Systems/" data-id="cje4elpte0000twdj155i507j" class="article-share-link">Teilen</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-report-for-Efficient-Estimation-of-Word-Representations-in-Vector-Space" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/02/23/report-for-Efficient-Estimation-of-Word-Representations-in-Vector-Space/" class="article-date">
@@ -203,7 +246,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://coretech.org/2018/02/23/report-for-Efficient-Estimation-of-Word-Representations-in-Vector-Space/" data-id="cje04tnce0001igdjdifchxkh" class="article-share-link">Teilen</a>
+      <a data-url="http://coretech.org/2018/02/23/report-for-Efficient-Estimation-of-Word-Representations-in-Vector-Space/" data-id="cje4elptn0001twdj53nlfq9z" class="article-share-link">Teilen</a>
       
       
     </footer>
@@ -249,7 +292,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://coretech.org/2018/01/28/hello-world/" data-id="cje04tnc60000igdjsctpc8wu" class="article-share-link">Teilen</a>
+      <a data-url="http://coretech.org/2018/01/28/hello-world/" data-id="cje4elpu00002twdjtga6sqfu" class="article-share-link">Teilen</a>
       
       
     </footer>
@@ -288,6 +331,10 @@
     <h3 class="widget-title">letzter Beitrag</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/02/26/On-Availability-for-Blockchain-Based-Systems/">On Availability for Blockchain-Based Systems</a>
+          </li>
         
           <li>
             <a href="/2018/02/23/report-for-Efficient-Estimation-of-Word-Representations-in-Vector-Space/">report for Efficient Estimation of Word Representations in Vector Space</a>
